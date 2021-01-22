@@ -6,14 +6,14 @@
 class KalmanFilter {
 public:
 	/**
-	 * Constructor
-	 */
+	* Constructor.
+	*/
 	KalmanFilter() = default;
 
 	/**
-	 * Destructor
-	 */
-	virtual ~KalmanFilter() = default;
+	* Destructor.
+	*/
+	~KalmanFilter() = default;
 
 	/**
 	 * Prediction Predicts the state and the state covariance
@@ -25,38 +25,40 @@ public:
 	/**
 	 * Updates the state by using standard Kalman Filter equations
 	 * @param z The measurement at k+1
+	 * @param H Measurement matrix
+	 * @param R Measurement covariance matrix
 	 */
-	void Update(const Eigen::VectorXd& z);
+	void Update(const Eigen::Vector2d& z, const Eigen::Matrix<double, 2, 4>& H, const Eigen::Matrix2d& R);
 
 	/**
-	 * Updates the state by using Extended Kalman Filter equations
+	 * Updates the state by using Extended Kalman Filter equations.
+	 * The Jacobian is calculated internally.
+	 *
 	 * @param z The measurement at k+1
+	 * @param R Measurement covariance matrix
 	 */
-	void UpdateEKF(const Eigen::VectorXd& z);
+	void UpdateEKF(const Eigen::Vector3d& z, const Eigen::Matrix3d& R);
 
 	/**
-	 * Calculate 'h(x_)', mapping cartesian to polar coordinates.
-	 * @return
+	 * Calculate Jacobian matrix based on the current state vector
 	 */
-	Eigen::VectorXd CalculateH() const;
+	Eigen::Matrix<double, 3, 4> CalculateJacobian() const;
 
-	// state vector
-	Eigen::VectorXd x_ = Eigen::VectorXd::Zero(4);
+	/// State vector
+	Eigen::Vector4d x_ = Eigen::Vector4d::Zero();
+	/// State covariance matrix
+	Eigen::Matrix4d P_ = Eigen::Matrix4d::Zero();
+	/// State transition matrix
+	Eigen::Matrix4d F_ = Eigen::Matrix4d::Zero();
+	/// Process covariance matrix
+	Eigen::Matrix4d Q_ = Eigen::Matrix4d::Zero();
 
-	// state covariance matrix
-	Eigen::MatrixXd P_ = Eigen::VectorXd::Zero(4, 4);
+private:
+	// Calculate 'h(x_)', mapping cartesian to polar coordinates.
+	Eigen::Vector3d CalculateH() const;
 
-	// state transition matrix
-	Eigen::MatrixXd F_ = Eigen::VectorXd::Zero(4, 4);
-
-	// process covariance matrix
-	Eigen::MatrixXd Q_ = Eigen::VectorXd::Zero(4, 4);
-
-	// measurement matrix
-	Eigen::MatrixXd H_ = Eigen::VectorXd::Zero(4, 4);
-
-	// measurement covariance matrix
-	Eigen::MatrixXd R_ = Eigen::VectorXd::Zero(4, 4);
+	// Common sections of ::Update and ::UpdateEKF.
+	void UpdateInternal(const Eigen::VectorXd& y, const Eigen::MatrixXd& H, const Eigen::MatrixXd& R);
 };
 
 #endif // KALMAN_FILTER_H_
