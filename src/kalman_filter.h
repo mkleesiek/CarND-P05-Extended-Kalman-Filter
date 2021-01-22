@@ -44,7 +44,7 @@ public:
 	 */
 	Eigen::Matrix<double, 3, 4> CalculateJacobian() const;
 
-	/// State vector
+    /// State vector
 	Eigen::Vector4d x_ = Eigen::Vector4d::Zero();
 	/// State covariance matrix
 	Eigen::Matrix4d P_ = Eigen::Matrix4d::Zero();
