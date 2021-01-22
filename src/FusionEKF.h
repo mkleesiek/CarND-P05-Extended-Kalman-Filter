@@ -19,7 +19,7 @@ class FusionEKF {
   /**
    * Destructor.
    */
-  virtual ~FusionEKF();
+  virtual ~FusionEKF() = default;
 
   /**
    * Run the whole flow of the Kalman Filter from here.
@@ -36,14 +36,20 @@ class FusionEKF {
   bool is_initialized_;
 
   // previous timestamp
-  long long previous_timestamp_;
+  uint64_t previous_timestamp_;
 
   // tool object used to compute Jacobian and RMSE
   Tools tools;
+
+  // matrices
   Eigen::MatrixXd R_laser_;
   Eigen::MatrixXd R_radar_;
   Eigen::MatrixXd H_laser_;
   Eigen::MatrixXd Hj_;
+
+  // noise
+  double noise_ax_;
+  double noise_ay_;
 };
 
 #endif // FusionEKF_H_
